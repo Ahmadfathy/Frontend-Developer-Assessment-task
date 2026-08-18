@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 export function MSWProvider({
   children,
@@ -8,9 +8,19 @@ export function MSWProvider({
   children: React.ReactNode;
 }) {
   const [ready, setReady] = useState(false);
+  // Guards against React Strict Mode's double-invoked mount effect in dev,
+  // which would otherwise call worker.start() twice and throw ("cannot
+  // configure an already enabled network") on the second call.
+  const startedRef = useRef(false);
 
   useEffect(() => {
     async function enableMocking() {
+      if (startedRef.current) {
+        setReady(true);
+        return;
+      }
+      startedRef.current = true;
+
       const { worker } = await import('@/mocks/browser');
 
       await worker.start({
