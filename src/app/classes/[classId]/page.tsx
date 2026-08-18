@@ -10,6 +10,7 @@ import { EmptyState } from '@/components/common/EmptyState';
 import { Toast } from '@/components/common/Toast';
 import { StudentSearch } from '@/components/classes/StudentSearch';
 import { StudentsTable } from '@/components/classes/StudentsTable';
+import { Pagination } from '@/components/classes/Pagination';
 import { EnrollStudentDialog } from '@/components/classes/EnrollStudentDialog';
 import { RemoveStudentConfirm } from '@/components/classes/RemoveStudentConfirm';
 import { useClass } from '@/hooks/useClass';
@@ -19,9 +20,14 @@ import { useDebouncedValue } from '@/hooks/useDebouncedValue';
 import { studentCountLabel } from '@/lib/format';
 import type { Student } from '@/types/api';
 
+// How many students the roster table shows per page. The API has no
+// page param (only `?search=`), so this is purely a client-side slice of
+// the already-fetched (and already server-search-filtered) result.
+const STUDENTS_PER_PAGE = 10;
+
 // Class detail page — the '/classes/[classId]' route from CLAUDE.md's
-// routing table. Shows the class header, a searchable table of its
-// enrolled students, and the enroll/remove flows.
+// routing table. Shows the class header, a searchable, paginated table
+// of its enrolled students, and the enroll/remove flows.
 export default function ClassDetailPage() {
   const { classId } = useParams<{ classId: string }>();
 
@@ -29,6 +35,21 @@ export default function ClassDetailPage() {
   // endpoint, so typing doesn't fire a request per keystroke.
   const [searchInput, setSearchInput] = useState('');
   const debouncedSearch = useDebouncedValue(searchInput);
+
+  // Pagination: which page of the (search-filtered) roster is showing.
+  const [page, setPage] = useState(1);
+
+  // A new search should always start back at page 1 — otherwise a query
+  // that only matches a couple of students could leave the admin looking
+  // at an empty page 3 with no obvious explanation. Adjusted directly
+  // during render (react.dev's "adjusting state when a prop changes"
+  // pattern, same as AppShell's drawer-close-on-route-change) rather
+  // than in an effect, so there's no stray extra render.
+  const [prevSearch, setPrevSearch] = useState(debouncedSearch);
+  if (debouncedSearch !== prevSearch) {
+    setPrevSearch(debouncedSearch);
+    setPage(1);
+  }
 
   // Dialog state.
   const [enrollOpen, setEnrollOpen] = useState(false);
@@ -50,6 +71,17 @@ export default function ClassDetailPage() {
 
   const students = studentsQuery.data ?? [];
   const enrolledIds = classQuery.data?.studentIds ?? [];
+
+  // Derived (not stored) pagination values, recomputed every render from
+  // `students` and `page` — this is what keeps pagination correct after
+  // e.g. a remove shrinks the list out from under the current page,
+  // without needing a separate effect to "fix up" `page` after the fact.
+  const totalPages = Math.max(1, Math.ceil(students.length / STUDENTS_PER_PAGE));
+  const currentPage = Math.min(page, totalPages);
+  const pageStudents = students.slice(
+    (currentPage - 1) * STUDENTS_PER_PAGE,
+    currentPage * STUDENTS_PER_PAGE
+  );
 
   // Re-fetches both the class header (so the enrolled count updates) and
   // the students table. Called after any successful enroll/remove.
@@ -137,11 +169,14 @@ export default function ClassDetailPage() {
               />
             )
           ) : (
-            <StudentsTable
-              students={students}
-              onRemove={handleRemoveClick}
-              removingId={removing ? studentToRemove?.id : null}
-            />
+            <div className="space-y-3">
+              <StudentsTable
+                students={pageStudents}
+                onRemove={handleRemoveClick}
+                removingId={removing ? studentToRemove?.id : null}
+              />
+              <Pagination page={currentPage} totalPages={totalPages} onPageChange={setPage} />
+            </div>
           )}
         </div>
       )}

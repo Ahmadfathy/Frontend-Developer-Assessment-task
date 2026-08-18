@@ -116,6 +116,9 @@ lib/services/*   →   hooks/*              →   components/* & app/*
       prevented up front, inline error handling (incl. 409 already-enrolled).
 - [x] **Remove a student from a class** — confirmation dialog naming the student before the
       destructive action.
+- [x] **Pagination on the class roster** — 10 students per page, "Page X of Y", Prev/Next,
+      client-side (the API has no page param) and correct alongside search: a new search resets
+      to page 1, and the page number self-clamps if a remove shrinks the list out from under it.
 - [x] **Loading / error (with Retry) / empty / disabled-while-submitting / success & error
       feedback** — present and independently correct for every page and dialog (see
       [Implementation](#implementation)).
@@ -127,8 +130,6 @@ lib/services/*   →   hooks/*              →   components/* & app/*
 - **No automated tests.** Everything was verified manually / with ad-hoc headless-browser scripts
   during development, not with a committed test suite (no Jest/Playwright/Vitest config in the
   repo).
-- **No pagination** on the class roster or the students list — both render every result from the
-  (server-search-filtered, but otherwise unpaginated) response as-is.
 - **The currently-viewed class isn't remembered** between visits — navigating away and back to
   `/classes` or `/` doesn't offer to resume the last class.
 - **Mutations refetch rather than update optimistically.** After a successful enroll/remove, the
@@ -149,7 +150,6 @@ lib/services/*   →   hooks/*              →   components/* & app/*
   refetch.
 - **Automated tests** — unit tests for `lib/format.ts` / `lib/errors.ts` (pure functions, easy
   wins) and component/e2e tests for the enroll/remove flows.
-- **Pagination** for long student lists.
 - **Persisting the last-viewed class** (e.g. `localStorage`) so the dashboard/classes list can
   offer to resume it.
 - **A real toast/notification system** — a single provider + queue instead of each page managing
