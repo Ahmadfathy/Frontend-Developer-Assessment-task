@@ -47,3 +47,10 @@ export function formatDate(iso: string): string {
     year: 'numeric',
   });
 }
+
+// Formats an enrolled-student count with correct pluralization, e.g.
+// "1 student" / "4 students". Shared wherever a class shows how many
+// students it has (class cards, class detail header, ...).
+export function studentCountLabel(count: number): string {
+  return `${count} ${count === 1 ? 'student' : 'students'}`;
+}
