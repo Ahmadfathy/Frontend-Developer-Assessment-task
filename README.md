@@ -124,14 +124,17 @@ lib/services/*   →   hooks/*              →   components/* & app/*
       [Implementation](#implementation)).
 - [x] **Confirmation dialog before removing** — `RemoveStudentConfirm`, with the destructive
       button spinner-disabled while the request is in flight.
+- [x] **Resume the last-visited class** — visiting a class's detail page remembers it
+      (`localStorage`); the Dashboard and Classes list then offer a "Continue where you left
+      off" shortcut back to it. Resilient by design: nothing shows if no class has been visited,
+      and a stored id that no longer resolves (e.g. deleted data) is silently forgotten rather
+      than offering a dead link.
 
 ## Limitations
 
 - **No automated tests.** Everything was verified manually / with ad-hoc headless-browser scripts
   during development, not with a committed test suite (no Jest/Playwright/Vitest config in the
   repo).
-- **The currently-viewed class isn't remembered** between visits — navigating away and back to
-  `/classes` or `/` doesn't offer to resume the last class.
 - **Mutations refetch rather than update optimistically.** After a successful enroll/remove, the
   affected lists are refetched from the mock API instead of being patched locally, so there's a
   brief spinner rather than an instant UI update.
@@ -150,8 +153,6 @@ lib/services/*   →   hooks/*              →   components/* & app/*
   refetch.
 - **Automated tests** — unit tests for `lib/format.ts` / `lib/errors.ts` (pure functions, easy
   wins) and component/e2e tests for the enroll/remove flows.
-- **Persisting the last-viewed class** (e.g. `localStorage`) so the dashboard/classes list can
-  offer to resume it.
 - **A real toast/notification system** — a single provider + queue instead of each page managing
   its own transient message state.
 - **Dark mode toggle** — wire up the `.dark` class (or `prefers-color-scheme`) that the design

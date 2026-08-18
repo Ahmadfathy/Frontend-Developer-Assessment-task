@@ -18,6 +18,7 @@ import { useClassStudents } from '@/hooks/useClassStudents';
 import { useRemoveStudent } from '@/hooks/useRemoveStudent';
 import { useDebouncedValue } from '@/hooks/useDebouncedValue';
 import { studentCountLabel } from '@/lib/format';
+import { setLastVisitedClassId } from '@/lib/lastVisitedClass';
 import type { Student } from '@/types/api';
 
 // How many students the roster table shows per page. The API has no
@@ -71,6 +72,19 @@ export default function ClassDetailPage() {
 
   const students = studentsQuery.data ?? [];
   const enrolledIds = classQuery.data?.studentIds ?? [];
+  const classLoaded = Boolean(classQuery.data);
+
+  // Remembers this class as the most recently visited one, once we've
+  // actually confirmed it exists (not just from the route param, which
+  // could be a typo'd/dead id) — so the Dashboard/Classes list can offer
+  // to resume it later (see hooks/useLastVisitedClass.ts). A plain write
+  // to an external system, not React state, so it doesn't need any
+  // special effect-ordering.
+  useEffect(() => {
+    if (classLoaded) {
+      setLastVisitedClassId(classId);
+    }
+  }, [classId, classLoaded]);
 
   // Derived (not stored) pagination values, recomputed every render from
   // `students` and `page` — this is what keeps pagination correct after

@@ -2,6 +2,7 @@
 
 import { GraduationCap } from 'lucide-react';
 import { ClassCard } from '@/components/classes/ClassCard';
+import { ResumeClassBanner } from '@/components/classes/ResumeClassBanner';
 import { LoadingState } from '@/components/common/LoadingState';
 import { ErrorState } from '@/components/common/ErrorState';
 import { EmptyState } from '@/components/common/EmptyState';
@@ -21,6 +22,8 @@ export default function ClassesPage() {
           Browse every class and open one to see its enrolled students.
         </p>
       </div>
+
+      <ResumeClassBanner />
 
       {loading ? (
         <LoadingState label="Loading classes..." />

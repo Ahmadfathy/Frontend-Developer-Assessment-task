@@ -6,6 +6,7 @@ import { StatCard } from '@/components/dashboard/StatCard';
 import { LoadingState } from '@/components/common/LoadingState';
 import { ErrorState } from '@/components/common/ErrorState';
 import { EmptyState } from '@/components/common/EmptyState';
+import { ResumeClassBanner } from '@/components/classes/ResumeClassBanner';
 import { Button } from '@/components/ui/button';
 import { useClasses } from '@/hooks/useClasses';
 import { useStudents } from '@/hooks/useStudents';
@@ -44,6 +45,8 @@ export default function DashboardPage() {
           An overview of your school&apos;s classes and students.
         </p>
       </div>
+
+      <ResumeClassBanner />
 
       {error ? (
         <ErrorState message={error} onRetry={retry} />
