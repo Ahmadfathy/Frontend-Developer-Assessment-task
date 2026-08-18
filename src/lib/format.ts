@@ -48,6 +48,12 @@ export function formatDate(iso: string): string {
   });
 }
 
+// Capitalizes a lowercase display value, e.g. 'male' -> 'Male'. Shared
+// wherever an API enum-ish field (gender, ...) is shown to the admin.
+export function capitalize(value: string): string {
+  return value.charAt(0).toUpperCase() + value.slice(1);
+}
+
 // Formats an enrolled-student count with correct pluralization, e.g.
 // "1 student" / "4 students". Shared wherever a class shows how many
 // students it has (class cards, class detail header, ...).

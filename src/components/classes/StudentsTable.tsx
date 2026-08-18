@@ -13,13 +13,8 @@ import {
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/common/Spinner';
 import { StatusBadge } from '@/components/common/StatusBadge';
-import { calculateAge, fullName } from '@/lib/format';
+import { calculateAge, capitalize, fullName } from '@/lib/format';
 import type { Student } from '@/types/api';
-
-// Capitalizes a lowercase value for display, e.g. 'male' -> 'Male'.
-function capitalize(value: string): string {
-  return value.charAt(0).toUpperCase() + value.slice(1);
-}
 
 // Table of a class's enrolled students: identity, demographics, status,
 // and a per-row Remove action. `removingId` marks the row currently being
