@@ -16,7 +16,12 @@ export function MSWProvider({
   useEffect(() => {
     async function enableMocking() {
       if (startedRef.current) {
-        setReady(true);
+        // Strict Mode's phantom re-invocation of this effect. The first
+        // invocation's worker.start() call (below) is still in flight and
+        // will call setReady(true) itself once it genuinely resolves —
+        // bail out here rather than marking ready early, otherwise
+        // children (and their fetches) could mount before the mock
+        // worker has actually registered and start racing it.
         return;
       }
       startedRef.current = true;
