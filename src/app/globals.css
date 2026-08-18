@@ -127,4 +127,15 @@
   html {
     @apply font-sans;
   }
+  /* Tailwind's Preflight leaves <button> at the browser default
+     (cursor: default) — unlike <a href>, which already gets a pointer
+     cursor natively. Make both consistently show a pointer, but not
+     when disabled (nothing happens on click, so a pointer would be
+     misleading; :not(:disabled) also makes this a no-op for the shared
+     Button component, which already hides disabled buttons from hover
+     entirely via pointer-events-none). */
+  button:not(:disabled),
+  a[href] {
+    @apply cursor-pointer;
+  }
 }
