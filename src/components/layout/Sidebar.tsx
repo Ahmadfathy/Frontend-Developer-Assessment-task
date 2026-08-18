@@ -16,7 +16,13 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname();
 
   return (
-    <div className="flex h-full flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground">
+    // <aside> (rather than a plain <div>) gives this its own landmark, so
+    // screen reader users can jump straight to the nav instead of having
+    // to read through it as undifferentiated content.
+    <aside
+      aria-label="Primary navigation"
+      className="flex h-full flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground"
+    >
       {/* Brand header */}
       <div className="flex h-14 items-center gap-2 border-b border-sidebar-border px-4">
         <GraduationCap aria-hidden="true" className="size-5 text-sidebar-primary" />
@@ -36,7 +42,7 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
               onClick={onNavigate}
               aria-current={active ? 'page' : undefined}
               className={cn(
-                'flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
+                'flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium outline-none transition-colors focus-visible:ring-3 focus-visible:ring-sidebar-ring',
                 active
                   ? 'bg-sidebar-primary text-sidebar-primary-foreground'
                   : 'text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
@@ -48,6 +54,6 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
           );
         })}
       </nav>
-    </div>
+    </aside>
   );
 }

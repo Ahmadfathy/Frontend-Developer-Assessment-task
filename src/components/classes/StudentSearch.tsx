@@ -7,14 +7,25 @@ import { Input } from '@/components/ui/input';
 // presentational — callers own the value and any debouncing (see
 // useDebouncedValue) before acting on it, e.g. passing it to a
 // server-side search endpoint.
+//
+// `ariaLabel` defaults to the placeholder rather than a fixed generic
+// string: the class detail page's roster search and the enroll dialog's
+// candidate search can both be on screen at once, and two controls
+// sharing the exact same accessible name is ambiguous for screen reader
+// and voice-control users. Callers with a generic placeholder can still
+// pass an explicit, more specific `ariaLabel`.
 export function StudentSearch({
   value,
   onChange,
   placeholder = 'Search students...',
+  ariaLabel = placeholder,
+  disabled = false,
 }: {
   value: string;
   onChange: (value: string) => void;
   placeholder?: string;
+  ariaLabel?: string;
+  disabled?: boolean;
 }) {
   return (
     <div className="relative">
@@ -27,7 +38,8 @@ export function StudentSearch({
         value={value}
         onChange={(event) => onChange(event.target.value)}
         placeholder={placeholder}
-        aria-label="Search students"
+        aria-label={ariaLabel}
+        disabled={disabled}
         className="pl-8"
       />
     </div>

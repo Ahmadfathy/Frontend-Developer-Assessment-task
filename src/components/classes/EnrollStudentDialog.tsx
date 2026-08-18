@@ -95,7 +95,13 @@ export function EnrollStudentDialog({
           <DialogDescription>Pick an existing student to add to this class.</DialogDescription>
         </DialogHeader>
 
-        <StudentSearch value={search} onChange={setSearch} placeholder="Search by name or ID..." />
+        <StudentSearch
+          value={search}
+          onChange={setSearch}
+          placeholder="Search by name or ID..."
+          ariaLabel="Search students to enroll by name or ID"
+          disabled={enrolling}
+        />
 
         <div className="max-h-72 overflow-y-auto rounded-lg border border-border">
           {studentsQuery.loading ? (
@@ -107,10 +113,16 @@ export function EnrollStudentDialog({
           ) : visibleCandidates.length === 0 ? (
             <EmptyState icon={UserX} title={`No students match "${search}"`} className="py-8" />
           ) : (
+            // Each row is a plain toggle button (aria-pressed), not
+            // role="radio": a real radiogroup implies arrow-key roving-
+            // tabindex navigation, which this doesn't implement, so
+            // claiming that role would be a broken accessibility promise.
+            // A labeled group of toggle buttons is fully keyboard-operable
+            // with plain Tab + Enter/Space, no extra wiring required.
             <div
-              role="radiogroup"
+              role="group"
               aria-label="Select a student to enroll"
-              className="divide-y divide-border"
+              className={cn('divide-y divide-border', enrolling && 'pointer-events-none opacity-60')}
             >
               {visibleCandidates.map((student) => {
                 const selected = student.id === selectedId;
@@ -119,11 +131,11 @@ export function EnrollStudentDialog({
                   <button
                     key={student.id}
                     type="button"
-                    role="radio"
-                    aria-checked={selected}
+                    aria-pressed={selected}
+                    disabled={enrolling}
                     onClick={() => setSelectedId(student.id)}
                     className={cn(
-                      'flex w-full items-center gap-2.5 px-3 py-2 text-left text-sm transition-colors hover:bg-muted',
+                      'flex w-full items-center gap-2.5 px-3 py-2 text-left text-sm outline-none transition-colors hover:bg-muted focus-visible:bg-muted',
                       selected && 'bg-primary/5'
                     )}
                   >

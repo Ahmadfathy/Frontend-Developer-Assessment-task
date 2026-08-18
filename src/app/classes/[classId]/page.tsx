@@ -115,6 +115,7 @@ export default function ClassDetailPage() {
             value={searchInput}
             onChange={setSearchInput}
             placeholder="Search by name or ID..."
+            ariaLabel="Search enrolled students by name or ID"
           />
 
           {studentsQuery.loading ? (

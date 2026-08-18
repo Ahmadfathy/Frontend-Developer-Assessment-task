@@ -9,6 +9,7 @@ import { ErrorState } from '@/components/common/ErrorState';
 import { StudentDetails } from '@/components/students/StudentDetails';
 import { useStudent } from '@/hooks/useStudent';
 import { useClasses } from '@/hooks/useClasses';
+import { fullName } from '@/lib/format';
 
 // Student detail page — the '/students/[studentId]' route from CLAUDE.md's
 // routing table. Must work on a direct URL / page refresh, so params are
@@ -53,7 +54,15 @@ export default function StudentDetailPage() {
         </div>
       ) : (
         studentQuery.data && (
-          <StudentDetails student={studentQuery.data} className={studentClass?.name} />
+          <div className="space-y-4">
+            {/* Every other page has a visible h1 naming what it shows;
+                this page was missing one entirely, which also left
+                screen-reader heading navigation with nothing to land on. */}
+            <h1 className="text-2xl font-semibold tracking-tight">
+              {fullName(studentQuery.data)}
+            </h1>
+            <StudentDetails student={studentQuery.data} className={studentClass?.name} />
+          </div>
         )
       )}
     </div>
